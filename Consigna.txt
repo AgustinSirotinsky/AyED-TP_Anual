@@ -1,0 +1,55 @@
+Trabajo práctico de cierre de la materia Algoritmos y estructura de datos – 2024
+Modalidad:
+Se deberá realizar el desarrollo del trabajo con fecha de entrega el día 1° de noviembre para aquellos que promocionen, los que no estén en condiciones de promocionar pueden entregar hasta el cierre de la materia en marzo de 2025.
+Lineamientos de entrega:
+•	Carátula con todos los integrantes
+•	Archivo con el código (cpp)
+•	Ejecutable 
+•	Documento con un detalle de como se resolvió el problema, manual de usuario y pantallas que muestren que el programa funciona
+•	Archivos anexos: se deben incluir los archivos que se utilicen en las pruebas
+•	Máximo 5 integrantes
+•	No pueden usar bibliotecas externas , solo lo aprendido en clase
+•	Caso de copia: desaprueban la materia y deberán recuperar en marzo perdiendo por completo la posibilidad de promoción.
+•	El trabajo para darse por cumplido debe entregarse funcionando con todos los ítems desarrollados.
+•	Se entrega por campus una copia por grupo.
+
+Sistema de turnos para pacientes de una clínica.
+
+Se dispone de varias estructuras:
+
+Archivo binario Pacientes:
+-	Id de paciente (secuencia), nombre, apellido, edad, dni, teléfono
+
+Archivo binario Médicos:
+-	Id de medico (secuencia), nombre, apellido, matricula, idespecialidad, días de atención(días como secuencia numérica donde el 1 es el domingo), rango horario (14 a 20 por ejemplo) y tiempo de consulta en minutos (15, 30, 45 o 60)
+
+Vector de Especialidades (max 20):
+-	Idespecialidad, descripción
+
+Lista de turnos (para el año en curso):
+-	idmedico y una sublista con el registro de los turnos:
+    Id único(secuencia), hora, día (días como secuencia numérica donde el 1 es el domingo), mes, estatus(P-A-C-X), idpaciente.
+                            P: pendiente, C: cancelado, A: atendido, X: no atendido sin cancelar
+
+Se solicita:
+•	Realizar un menú para administrar los turnos:
+    Altas:
+        -	Nuevo paciente
+        -	Nuevo turno: el alta debe darse como turno pendiente(P), pero se deberá validar que no exista otro turno ya dado al paciente para ese médico y que el médico no tenga turnos tomados en ese horario.
+        -	Nuevo médico
+	Actualizaciones:
+	    -   Dado el id de médico y de turno se debe poder actualizar el status
+	Listados:
+        -	Turnos pendientes para un mes determinado, para un idmedico dado
+        -	Cantidad de atenciones efectivas (status A) de todos los médicos del sistema para un mes determinado.
+        -	Listado de cancelaciones para un mes determinado con los siguientes datos:
+            Nombre del paciente, nombre del médico, especialidad, día de atención.
+
+Se pueden utilizar todas las estructuras auxiliares que crean necesarias.
+
+No pueden utilizar bibliotecas externas.
+
+La entrega debe contener todos los archivos para realizar las pruebas y una rutina de carga automática de la lista para poder utilizar el sistema y verificar su funcionamiento.
+
+
+
