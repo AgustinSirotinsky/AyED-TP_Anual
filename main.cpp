@@ -120,7 +120,7 @@ nodo *buscar(nodo *lista, int legajo)
     return q;
 }
 
-nodo *insertarsinRepetir(nodo *&lista, int sucursal)\
+nodo *insertarsinRepetir(nodo *&lista, int sucursal)
 {
     nodo *aux = buscar(lista, sucursal);
     if (aux == NULL)
