@@ -3,6 +3,26 @@
 
 using namespace std;
 
+struct alumno
+{
+    int legajo;
+    char nombre[20];
+};
+
+struct nodo
+{
+    alumno info;
+    nodo *sgte;
+};
+
+void push(nodo *&pila, alumno al);
+alumno pop(nodo *&pila);
+void encolar(nodo *fte, nodo *fin, alumno al);
+alumno desencolar(nodo *&fte, nodo *&fin);
+nodo *insertarOrdenado(nodo *&lista, alumno info);
+nodo *buscar(nodo *lista, int legajo);
+nodo *insertarsinRepetir(nodo *&lista, int sucursal);
+
 int main()
 {
 
@@ -100,4 +120,12 @@ nodo *buscar(nodo *lista, int legajo)
     return q;
 }
 
-nodo *insertarsinRepetir(nodo *&lista, int sucursal)
+nodo *insertarsinRepetir(nodo *&lista, int sucursal)\
+{
+    nodo *aux = buscar(lista, sucursal);
+    if (aux == NULL)
+    {
+        aux = insertarOrdenado(lista, aux->info); // Posiblemente hay que corregir
+    }
+    return aux;
+}
