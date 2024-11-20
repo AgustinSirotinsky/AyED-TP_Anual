@@ -4,66 +4,11 @@
 using namespace std;
 
 /*
-struct alumno
-{
-    int legajo;
-    char nombre[20];
-};
-
-struct nodo
-{
-    alumno info;
-    nodo *sgte;
-};
 
 void push(nodo *&pila, alumno al);
 alumno pop(nodo *&pila);
-void encolar(nodo *fte, nodo *fin, alumno al);
-alumno desencolar(nodo *&fte, nodo *&fin);
-nodo *insertarOrdenado(nodo *&lista, alumno info);
-nodo *buscar(nodo *lista, int legajo);
-nodo *insertarsinRepetir(nodo *&lista, int sucursal);
+
 */
-
-// vector
-struct especialidad{
-	int id;
-	char descrpcion [50+1];
-};
-
-
-// structs info
-struct paciente {
-	int id;
-	char nombre[50+1];
-	char apellido[50+1];
-	int edad;
-	char dni [8+1];
-	int telefono;
-};
-struct medico {
-	int id;
-	char nombre[50+1];
-	char apellido[50+1];
-	int matricula;
-	int idEspecialidad;
-	int diasAtencion;
-	int rangoHorario;
-	int tiempoConsulta;
-};
-struct turno {
-	int id;
-	nodo_turnoPaciente *listaTurnoPaciente;
-};
-
-struct infoTurnoPaciente{
-	int id;
-	int hora;
-	int diaSem;
-	int mes;
-	char status;
-	int idPaciente;	
-};
 
 // structs nodos
 struct nodo_turnoPaciente{
@@ -75,88 +20,59 @@ struct nodo_paciente {
 	paciente info;
 	nodo_paciente *sgte;
 };
+
 struct nodo_medico {
 	medico info;
 	nodo_medico *sgte;
-	
 };
+
 struct nodo_turno {
 	turno info;
 	nodo_turno *sgte;
-	
 };
 
-// variables globales
-nodo_paciente *listaPacientes = NULL;
-nodo_medico *listaMedicos = NULL;
-nodo_turno *listaTurnos = NULL;
-especialidad vecEspecialidad[20];
+// vector max 20
+struct especialidad{
+	int id;
+	char descripcion [50+1];
+};
 
-// prototipos
-void volcarArchivosaListas();
-void mostrarMenu();
+// structs info
+struct paciente {
+	int id; //secuencia
+	char nombre[50+1];
+	char apellido[50+1];
+	int edad;
+	char dni [8+1];
+	int telefono;
+};
 
-int main()
-{
-	volcarArchivosaListas();
-	mostrarMenu();
+struct medico {
+	int id;
+	char nombre[50+1];
+	char apellido[50+1];
+	int matricula;
+	int idEspecialidad;
+	int diasAtencion; // Dias como secuencia numerica donde 1 es domingo
+	int rangoHorario; // De 00 a 24
+	int tiempoConsulta; // En minutos
+};
 
-    return 0;
-}
+struct turno { // Charlar si conviene dejarlo como struct o integrarlo a struct medico
+	int id; //idmedico
+	nodo_turnoPaciente *listaTurnoPaciente;//sublista con datos del turno + idpaciente
+};
+
+struct infoTurnoPaciente{
+	int id; // Unico, secuencia
+	int hora; 
+	int diaSem; // Dias como secuencia numerica donde 1 es domingo
+	int mes;
+	char status; // (P:pendiente - A:atendido - C:cancelado - X:no atendido sin cancelar)
+	int idPaciente;	
+};
 
 /*
-alumno pop(nodo *&pila)
-{
-    alumno aux;        // aux para guardar la info
-    nodo *p = pila;    // preservo la direccion del nodo
-    aux = p->info;     // le doy la info al aux
-    pila = pila->sgte; // pila apunta al anterior
-    delete p;          // libero la memoria
-    return aux;        // retorna el dato
-}
-
-void push(nodo *&pila, alumno al)
-{
-    nodo *p = new nodo();
-    p->info = al;
-    p->sgte = pila;
-
-    pila = p;
-}
-
-void encolar(nodo *fte, nodo *fin, alumno al)
-{
-    nodo *p = new nodo(); // reservo espacio en memoria
-    p->info = al;         // guardo la info
-    p->sgte = NULL;       // inicializo el puntero
-
-    if (fte == NULL)
-    {            // si es la primera vez
-        fte = p; // enlazo al frente
-    }
-    else
-    {
-        fin->sgte = p;
-        // cuando hay datos actualizo el
-        // puntero del que va a dejar ser ultimo.
-    }
-    fin = p; // apunto fin al nodo nuevo
-}
-
-alumno desencolar(nodo *&fte, nodo *&fin)
-{
-    alumno aux;    // AUX para devolver el dato
-    nodo *p = fte; // aux para el nodo que se borra
-    aux = p->info; // recupero la info
-    fte = p->sgte; // avanzo el ptro a fte
-    if (fte == NULL)
-    {               // si no hay mas nodos
-        fin = NULL; // fin apunta a null
-    }
-    delete p;   // libero el nodo
-    return aux; // retorno el contenido de info
-}
-
 nodo *insertarOrdenado(nodo *&lista, alumno info)
 {
     // 1) armar el nodo
@@ -207,23 +123,64 @@ nodo *insertarsinRepetir(nodo *&lista, int sucursal)
 }
 */
 
+// variables globales
+nodo_paciente *listaPacientes = NULL;
+nodo_medico *listaMedicos = NULL;
+nodo_turno *listaTurnos = NULL;
+especialidad vecEspecialidad[20];
+
+// prototipos
+void volcarArchivosaListas(); // Separar por cada tipo de lista o hacer template
+void mostrarMenu();
+
+int main()
+{
+	volcarArchivosaListas();
+	mostrarMenu();
+
+    return 0;
+}
+
+/*
+
+alumno pop(nodo *&pila)
+{
+    alumno aux;        // aux para guardar la info
+    nodo *p = pila;    // preservo la direccion del nodo
+    aux = p->info;     // le doy la info al aux
+    pila = pila->sgte; // pila apunta al anterior
+    delete p;          // libero la memoria
+    return aux;        // retorna el dato
+}
+
+void push(nodo *&pila, alumno al)
+{
+    nodo *p = new nodo();
+    p->info = al;
+    p->sgte = pila;
+
+    pila = p;
+}
+
+*/
+
 int imprimirMenu(){
 	
 	cout<<endl;
 	cout<<" ** MENU **"<<endl;
 	cout<<endl;
 	cout<<"  ALTA"<<endl;
-	cout<<"    1- NUEVO PACIENTE"<<endl;
-	cout<<"    2- NUEVO TURNO"<<endl;
-	cout<<"    3- NUEVO MEDICO"<<endl;	
+	cout<<"    1- NUEVO PACIENTE"<<endl; //Cargar en el archivo
+	cout<<"    2- NUEVO TURNO"<<endl; //Carcar sublista de turnos
+	cout<<"    3- NUEVO MEDICO"<<endl; //Cargar un medico
 	cout<<endl;
 	cout<<"  ACTUALIZACIONES"<<endl;
 	cout<<"    4- ACTUALIZAR STATUS"<<endl;	
 	cout<<endl;
 	cout<<"  LISTADO"<<endl;
-	cout<<"    5- TURNOS PENDIENTES"<<endl;
-	cout<<"    6- CANTIDAD ATENCIONES EFECTIVAS"<<endl;
-	cout<<"    7- CANCELACIONES"<<endl;
+	cout<<"    5- TURNOS PENDIENTES"<<endl; // Ingresar mes e idmedico y muestra por pantalla la lista
+	cout<<"    6- CANTIDAD ATENCIONES EFECTIVAS"<<endl; // Contador de todos los turnos atendidos
+	cout<<"    7- CANCELACIONES"<<endl; // Ingresar nombre del paciente, medico, especialidad y dia y mostar por pantalla la lista
 	cout<<endl;
 	
 	int opc = -1;
@@ -271,6 +228,8 @@ void mostrarMenu(){
 		ejecutarOpcion(opcion);
 	}
 }
+
+/* Cargar archivo o lista?
 void insertarPacienteOrd(nodo_paciente *nodo){
 	if (listaPacientes == NULL ||
         nodo->info.id < listaPacientes->info.id) {
@@ -316,4 +275,4 @@ void volcarArchivosaListas(){
 	volcarPacientesaLista();
 	volcarMedicosaLista();
 }
-
+*/
