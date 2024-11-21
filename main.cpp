@@ -20,8 +20,8 @@ char nomb_M[15];
 char ape_M[15];
 int matricula;
 int id_especialidad;
-int disponibilidad;  //secuencia numerica 7 dias 1234567
-char rango[10];
+int disponibilidad;  //secuencia numerica 7 dias 1234567, 1 es domingo
+char rango[10]; // De 00 a 24
 int tiempo;
 };
 
@@ -37,7 +37,7 @@ int d;
 int m;
 char estatus;
 int id_psub;
-int f;
+int f; //fecha
 };
 
 struct Turnos{
@@ -47,7 +47,7 @@ Turnos *sgte=NULL;
 
 struct Lista_M{
 	int id_listM;
-	Turnos *x;
+	Turnos *x=NULL;
 	Lista_M *sgte=NULL;
 	};
 
@@ -102,8 +102,8 @@ void InsertarOrdenado(Turnos *&n,info_turnos y){
 	p->info=y;
 	p->sgte=NULL;
 	if(n==NULL||y.f<n->info.f){
-		p->sgte==n;
-		n==p;
+		p->sgte=n;
+		n=p;
 }
 else{
 	Turnos *q=n;
@@ -137,7 +137,7 @@ return;
 
 int InsertarSinRepetir(Turnos *&n,info_turnos &y){
     int f,s=0;
-	f=y.h*1000+y.d*100+y.m;
+	f=y.h*1000+y.d*100+y.m; //fecha
 	y.f=f;
 	Turnos *aux1=buscarTURNf(n,y.f);
 	Turnos *aux2=buscarTURNID(n,y.id_psub);
@@ -208,8 +208,8 @@ int i=0, j=0, b=0;
 cout << "Ingrese id del medico a atenderse" << endl;
 cin >> i;
 aux=Buscar_ID(lista,i);
-if(aux!=NULL){
-	m.id_turno=j++;
+if(aux!=NULL){ // m no tiene nada asignado entonces sería 1 aunque el valor mas bajo de la lista sea por ej 2. Declarar m.
+	m.id_turno++;
 	}
 do{
 	
@@ -225,7 +225,7 @@ cin >> m.id_psub;
 b=InsertarSinRepetir(aux->x,m);
 if(b==2){
 cout << "El paciente ya tiene turno con el medico" << endl;
-}	
+}
 if(b==0){
 	cout << "Turno ya ocupado, vuelva a ingresar en otro horario/dia/mes" << endl;
 }
