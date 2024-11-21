@@ -5,7 +5,8 @@
 
 using namespace std;
 
-struct Paciente {
+struct Paciente
+{
 	int id_paciente;
 	char nomb_P[15];
 	char ape_P[15];
@@ -14,176 +15,332 @@ struct Paciente {
 	int telefono;
 };
 
-struct Medicos {
-int id_medico;
-char nomb_M[15];
-char ape_M[15];
-int matricula;
-int id_especialidad;
-int disponibilidad;  //secuencia numerica 7 dias 1234567, 1 es domingo
-char rango[10]; // De 00 a 24
-int tiempo;
+struct Medicos
+{
+	int id_medico;
+	char nomb_M[15];
+	char ape_M[15];
+	int matricula;
+	int id_especialidad;
+	int disponibilidad; // secuencia numerica 7 dias 1234567, 1 es domingo
+	char rango[10];		// De 00 a 24
+	int tiempo;
 };
 
-struct Especialidades {
-int id_especialidades;
-char descrip[20];
+struct Especialidades
+{
+	int id_especialidades;
+	char descrip[20];
 };
 
-struct info_turnos {
-int id_turno; 
-int h;
-int d;
-int m;
-char estatus;
-int id_psub;
-int f; //fecha
+struct info_turnos
+{
+	int id_turno;
+	int h;
+	int d;
+	int m;
+	char estatus;
+	int id_psub;
+	int f; // fecha
 };
 
-struct Turnos{
-info_turnos info;
-Turnos *sgte=NULL;
+struct Turnos
+{
+	info_turnos info;
+	Turnos *sgte = NULL;
 };
 
-struct Lista_M{
+struct Lista_M
+{
 	int id_listM;
-	Turnos *x=NULL;
-	Lista_M *sgte=NULL;
-	};
+	Turnos *x = NULL;
+	Lista_M *sgte = NULL;
+};
 
-Lista_M *Buscar_ID(Lista_M *lista,int i);
-Turnos *buscarTURNf(Turnos *n,int i);
-Turnos *buscarTURNID(Turnos *n,int i);
-void InsertarOrdenado(Turnos *&n,info_turnos y);
-void InsertarOrdenadoM(Lista_M *&lista,int i);
-int InsertarSinRepetir(Turnos *&n,info_turnos &y);	
+Lista_M *Buscar_ID(Lista_M *lista, int i);
+Turnos *buscarTURNf(Turnos *n, int i);
+Turnos *buscarTURNID(Turnos *n, int i);
+void InsertarOrdenado(Turnos *&n, info_turnos y);
+void InsertarOrdenadoM(Lista_M *&lista, int i);
+int InsertarSinRepetir(Turnos *&n, info_turnos &y);
 int imprimirMenu();
-void ejecutarOpcion(int opc,Lista_M *&lista);
-void mostrarMenu(Lista_M *&lista);
+void ejecutarOpcion(int opc, Lista_M *&lista);
+void mostrarMenu(Lista_M *&lista, Especialidades vec[]);
 void nuevoPaciente();
 void nuevoTurno(Lista_M *&lista);
 void nuevoMedico(Lista_M *&lista);
+void actualizarStatus(Lista_M *&lista);
+void buscarMES(Turnos *n, int i);
+void listarTurnosPendientes(Lista_M *&lista);
+void listarAtencionesEfectivas(Lista_M *&lista);
+void listarCancelaciones(Lista_M *&lista, Especialidades vec[]);
+Paciente apareoP(char ruta1[], int id);
+Medicos apareoM(char ruta2[], int id);
+int apareoE(int id, Especialidades vec[]);
+int buscarMayor(Lista_M *&lista);
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv)
+{
+	int z = 0;
 	Especialidades v[20];
-	Lista_M *lista=NULL;
-	mostrarMenu(lista);
-	
+	for (int i = 0; i < 20; i++)
+	{
+		v[i].id_especialidades = i + 1;
+	}
+	strcpy(v[0].descrip, "Odontologia");
+	strcpy(v[1].descrip, "Pediatria");
+	strcpy(v[2].descrip, "Kinesiologia");
+	strcpy(v[3].descrip, "Dermatologia");
+	strcpy(v[4].descrip, "Ginecologia");
+	strcpy(v[5].descrip, "Cardiologia");
+	strcpy(v[6].descrip, "Coloproctologia");
+	strcpy(v[7].descrip, "Infectologia");
+	strcpy(v[8].descrip, "Traumatologia");
+	strcpy(v[9].descrip, "Neurologia");
+	strcpy(v[10].descrip, "Hepatologia");
+	strcpy(v[11].descrip, "Inmunologia");
+	strcpy(v[12].descrip, "Gastroenterologia");
+	strcpy(v[13].descrip, "Anestesiologia");
+	strcpy(v[14].descrip, "Oncologia");
+	strcpy(v[15].descrip, "Toxicologia");
+	strcpy(v[16].descrip, "Urologia");
+	strcpy(v[17].descrip, "Neumologia");
+	strcpy(v[18].descrip, "Obstetricia");
+	strcpy(v[19].descrip, "Endocrinologia");
+
+	Lista_M *lista = NULL;
+	mostrarMenu(lista, v);
+
 	return 0;
 }
 
-Lista_M *Buscar_ID(Lista_M *lista,int i){
-	Lista_M *q=lista;
-	while(q!=NULL&&q->id_listM!=i){
-	q=q->sgte;
-}
-return q;
-}
-
-Turnos *buscarTURNf(Turnos *n,int i){
-	Turnos *q=n;
-	while(q!=NULL&&q->info.f!=i){
-	q=q->sgte;
-}
-return q;
-}
-
-Turnos *buscarTURNID(Turnos *n,int i){
-	Turnos *q=n;
-	while(q!=NULL&&q->info.id_psub!=i){
-	q=q->sgte;
-}
-return q;
-}
-
-void InsertarOrdenado(Turnos *&n,info_turnos y){
-	
-	Turnos *p=new Turnos();
-	p->info=y;
-	p->sgte=NULL;
-	if(n==NULL||y.f<n->info.f){
-		p->sgte=n;
-		n=p;
-}
-else{
-	Turnos *q=n;
-	while(q->sgte!=NULL&&q->sgte->info.f<y.f){
-		q=q->sgte;
-}
-p->sgte=q->sgte;
-q->sgte=p;
-}
-return;
-}
-
-void InsertarOrdenadoM(Lista_M *&lista,int i){
-	Lista_M *p=new Lista_M();
-	p->id_listM=i;
-	p->sgte=NULL;
-		if(lista==NULL||i<lista->id_listM){
-		p->sgte==lista;
-		lista==p;
-}
-else{
-	Lista_M *q=lista;
-	while(q->sgte!=NULL&&q->sgte->id_listM<i){
-		q=q->sgte;
-}
-p->sgte=q->sgte;
-q->sgte=p;
-}
-return;
-}
-
-int InsertarSinRepetir(Turnos *&n,info_turnos &y){
-    int f,s=0;
-	f=y.h*1000+y.d*100+y.m; //fecha
-	y.f=f;
-	Turnos *aux1=buscarTURNf(n,y.f);
-	Turnos *aux2=buscarTURNID(n,y.id_psub);
-	if(aux1==NULL&&aux2==NULL){
-	InsertarOrdenado(n,y);
-	s=1;
-}
-if(aux2!=NULL){
-	s=2;
+Lista_M *Buscar_ID(Lista_M *lista, int i)
+{
+	Lista_M *q = lista;
+	while (q != NULL && q->id_listM != i)
+	{
+		q = q->sgte;
 	}
-if(aux1!=NULL&&aux2==NULL){
-	s=0;
-	}
-return s;
+	return q;
 }
 
-int imprimirMenu(){
-	
-	cout<<endl;
-	cout<<" ** MENU **"<<endl;
-	cout<<endl;
-	cout<<"  ALTA"<<endl;
-	cout<<"    1- NUEVO PACIENTE"<<endl; //Cargar en el archivo
-	cout<<"    2- NUEVO TURNO"<<endl; //Carcar sublista de turnos
-	cout<<"    3- NUEVO MEDICO"<<endl; //Cargar un medico
-	cout<<endl;
-	cout<<"  ACTUALIZACIONES"<<endl;
-	cout<<"    4- ACTUALIZAR STATUS"<<endl;	
-	cout<<endl;
-	cout<<"  LISTADO"<<endl;
-	cout<<"    5- TURNOS PENDIENTES"<<endl; // Ingresar mes e idmedico y muestra por pantalla la lista
-	cout<<"    6- CANTIDAD ATENCIONES EFECTIVAS"<<endl; // Contador de todos los turnos atendidos
-	cout<<"    7- CANCELACIONES"<<endl; // Ingresar nombre del paciente, medico, especialidad y dia y mostar por pantalla la lista
-	cout<<endl;
-	
+Turnos *buscarTURNf(Turnos *n, int i)
+{
+	Turnos *q = n;
+	while (q != NULL && q->info.f != i)
+	{
+		q = q->sgte;
+	}
+	return q;
+}
+
+Turnos *buscarTURNID(Turnos *n, int i)
+{
+	Turnos *q = n;
+	while (q != NULL && q->info.id_psub != i)
+	{
+		q = q->sgte;
+	}
+	return q;
+}
+
+void buscarMES(Turnos *n, int i)
+{
+	Turnos *q = n;
+	while (q != NULL && q->info.m != i)
+	{
+		q = q->sgte;
+	}
+	cout << "ID PACIENTE:		ID TURNO:		HORA:		DIA:		MES:		ESTADO:" << endl;
+	while (q->info.m == i)
+	{
+		if (q->info.estatus == 'P')
+		{
+			cout << q->info.id_psub << " " << q->info.id_turno << " " << q->info.h << " " << q->info.d << " " << q->info.m << " " << q->info.estatus << endl;
+		}
+
+		q = q->sgte;
+	}
+	return;
+}
+
+void cantMES(Lista_M *lista, int mes)
+{
+	Lista_M *aux = lista;
+	int c = 0;
+	while (aux != NULL)
+	{
+		while (aux->x != NULL && aux->x->info.m != mes)
+		{
+			aux->x = aux->x->sgte;
+		}
+		while (aux->x != NULL && aux->x->info.m == mes)
+		{
+			if (aux->x->info.estatus == 'A')
+			{
+				c++;
+			}
+
+			aux->x = aux->x->sgte;
+		}
+		cout << "CANT DE TURNOS ATENDIDOS DE ID MEDICO " << aux->id_listM << ": " << c << endl;
+		aux = aux->sgte;
+	}
+	return;
+}
+
+Paciente apareoP(char ruta1[], int id)
+{
+	Paciente y;
+	FILE *a = fopen(ruta1, "rb");
+	fread(&y, sizeof(Paciente), 1, a);
+	while (!feof(a))
+	{
+		if (y.id_paciente != id)
+		{
+			fread(&y, sizeof(Paciente), 1, a);
+		}
+		else
+		{
+			fseek(a, sizeof(Paciente), SEEK_END);
+		}
+	}
+	fclose(a);
+	return y;
+}
+
+Medicos apareoM(char ruta2[], int id)
+{
+	Medicos y;
+	FILE *a = fopen(ruta2, "rb");
+	fread(&y, sizeof(Medicos), 1, a);
+	while (!feof(a))
+	{
+		if (y.id_medico != id)
+		{
+			fread(&y, sizeof(Medicos), 1, a);
+		}
+		else
+		{
+			fseek(a, sizeof(Medicos), SEEK_END);
+		}
+	}
+	fclose(a);
+	return y;
+}
+
+int apareoE(int id, Especialidades vec[])
+{
+	int i = 0;
+	while (vec[i].id_especialidades != id)
+	{
+		i++;
+	}
+	return i;
+}
+
+void InsertarOrdenado(Turnos *&n, info_turnos y)
+{
+
+	Turnos *p = new Turnos();
+	p->info = y;
+	p->sgte = NULL;
+	if (n == NULL || y.f < n->info.f)
+	{
+		p->sgte = n;
+		n = p;
+	}
+	else
+	{
+		Turnos *q = n;
+		while (q->sgte != NULL && q->sgte->info.f < y.f)
+		{
+			q = q->sgte;
+		}
+		p->sgte = q->sgte;
+		q->sgte = p;
+	}
+	return;
+}
+
+void InsertarOrdenadoM(Lista_M *&lista, int i)
+{
+	Lista_M *p = new Lista_M();
+	p->id_listM = i;
+	p->sgte = NULL;
+	if (lista == NULL || i < lista->id_listM)
+	{
+		p->sgte == lista;
+		lista == p;
+	}
+	else
+	{
+		Lista_M *q = lista;
+		while (q->sgte != NULL && q->sgte->id_listM < i)
+		{
+			q = q->sgte;
+		}
+		p->sgte = q->sgte;
+		q->sgte = p;
+	}
+	return;
+}
+
+int InsertarSinRepetir(Turnos *&n, info_turnos &y)
+{
+	int f, s = 0;
+	f = y.h * 1000 + y.d * 100 + y.m; // fecha
+	y.f = f;
+	Turnos *aux1 = buscarTURNf(n, y.f);
+	Turnos *aux2 = buscarTURNID(n, y.id_psub);
+	if (aux1 == NULL && aux2 == NULL)
+	{
+		InsertarOrdenado(n, y);
+		s = 1;
+	}
+	if (aux2 != NULL)
+	{
+		s = 2;
+	}
+	if (aux1 != NULL && aux2 == NULL)
+	{
+		s = 0;
+	}
+	return s;
+}
+
+int imprimirMenu()
+{
+
+	cout << endl;
+	cout << " ** MENU **" << endl;
+	cout << endl;
+	cout << "  ALTA" << endl;
+	cout << "    1- NUEVO PACIENTE" << endl; // Cargar en el archivo
+	cout << "    2- NUEVO TURNO" << endl;	 // Carcar sublista de turnos
+	cout << "    3- NUEVO MEDICO" << endl;	 // Cargar un medico
+	cout << endl;
+	cout << "  ACTUALIZACIONES" << endl;
+	cout << "    4- ACTUALIZAR STATUS" << endl;
+	cout << endl;
+	cout << "  LISTADO" << endl;
+	cout << "    5- TURNOS PENDIENTES" << endl;				// Ingresar mes e idmedico y muestra por pantalla la lista
+	cout << "    6- CANTIDAD ATENCIONES EFECTIVAS" << endl; // Contador de todos los turnos atendidos
+	cout << "    7- CANCELACIONES" << endl;					// Ingresar nombre del paciente, medico, especialidad y dia y mostar por pantalla la lista
+	cout << endl;
+
 	int opc = -1;
-	cout<<"ingrese una opcion: ";
-	cin>>opc;
-	cout<<endl;
-	
+	cout << "ingrese una opcion: ";
+	cin >> opc;
+	cout << endl;
+
 	return opc;
 }
 
-void nuevoPaciente(){
+void nuevoPaciente()
+{
 	Paciente x;
-	FILE *a=fopen("PACIENTES.bin","rb+");
+	FILE *a = fopen("PACIENTES.bin", "rb+");
 	cout << "Ingrese id del paciente" << endl;
 	cin >> x.id_paciente;
 	cout << "Ingrese nombre del paciente" << endl;
@@ -196,46 +353,73 @@ void nuevoPaciente(){
 	cin >> x.dni;
 	cout << "Ingrese telefono del paciente" << endl;
 	cin >> x.telefono;
-	fwrite(&x,sizeof(Paciente),1,a);
+	fwrite(&x, sizeof(Paciente), 1, a);
 	fclose(a);
-return;	
+	return;
 }
 
-void nuevoTurno(Lista_M *&lista){
-Lista_M *aux;
-info_turnos m;
-int i=0, j=0, b=0;
-cout << "Ingrese id del medico a atenderse" << endl;
-cin >> i;
-aux=Buscar_ID(lista,i);
-if(aux!=NULL){ // m no tiene nada asignado entonces sería 1 aunque el valor mas bajo de la lista sea por ej 2. Declarar m.
-	m.id_turno++;
+int buscarMayor(Lista_M *&lista)
+{
+	Lista_M *aux = lista ;
+	int mayor = 0;
+	while (aux != NULL)
+	{
+		while (aux->x != NULL)
+		{
+			if (aux->x->info.id_turno>mayor)
+			{
+				mayor = aux->x->info.id_turno;
+			}
+			
+			aux->x = aux->x->sgte;
+		}
+		aux = aux->sgte;
 	}
-do{
-	
-cout << " ingrese hora del turno" << endl;
-cin >> m.h;
-cout << " ingrese dia del turno" << endl;
-cin >> m.d;
-cout << " ingrese mes del turno" << endl;
-cin >> m.m;
-m.estatus='P';
-cout << " ingrese id del paciente" << endl;
-cin >> m.id_psub;
-b=InsertarSinRepetir(aux->x,m);
-if(b==2){
-cout << "El paciente ya tiene turno con el medico" << endl;
+
+	return mayor;
 }
-if(b==0){
-	cout << "Turno ya ocupado, vuelva a ingresar en otro horario/dia/mes" << endl;
-}
-}while(b==0);
-return;
+void nuevoTurno(Lista_M *&lista)
+{
+	Lista_M *aux;
+	info_turnos m;
+	int i = 0, j = 0, b = 0, z = 0;
+	cout << "Ingrese id del medico a atenderse" << endl;
+	cin >> i;
+	aux = Buscar_ID(lista, i);
+	do
+	{
+		cout << " ingrese hora del turno" << endl;
+		cin >> m.h;
+		cout << " ingrese dia del turno" << endl;
+		cin >> m.d;
+		cout << " ingrese mes del turno" << endl;
+		cin >> m.m;
+		m.estatus = 'P';
+		cout << " ingrese id del paciente" << endl;
+		cin >> m.id_psub;
+		b = InsertarSinRepetir(aux->x, m);
+		if (b == 2)
+		{
+			cout << "El paciente ya tiene turno con el medico" << endl;
+		}
+		if (b == 0)
+		{
+			cout << "Turno ya ocupado, vuelva a ingresar en otro horario/dia/mes" << endl;
+		}
+		if (b == 1)
+		{
+			z=buscarMayor(lista);
+			aux->x->info.id_turno=z++;
+		}
+
+	} while (b == 0);
+	return;
 }
 
-void nuevoMedico(Lista_M *&lista){
-Medicos h;
-FILE *b=fopen("MEDICOS.bin","rb+");
+void nuevoMedico(Lista_M *&lista)
+{
+	Medicos h;
+	FILE *b = fopen("MEDICOS.bin", "rb+");
 	cout << "Ingrese id del medico" << endl;
 	cin >> h.id_medico;
 	cout << "Ingrese nombre del medico" << endl;
@@ -252,47 +436,162 @@ FILE *b=fopen("MEDICOS.bin","rb+");
 	cin >> h.rango;
 	cout << "Ingrese tiempo de consulta en minutos" << endl;
 	cin >> h.tiempo;
-	fwrite(&h,sizeof(Medicos),1,b);
+	fwrite(&h, sizeof(Medicos), 1, b);
 	fclose(b);
-	InsertarOrdenadoM(lista,h.id_medico);
-return;	
-	
+	InsertarOrdenadoM(lista, h.id_medico);
+	return;
 }
 
-void ejecutarOpcion(int opc, Lista_M *&lista){
-	switch(opc){
-		case 1:
-			nuevoPaciente();
-			break;
-		case 2:
-			nuevoTurno(lista);
-			break;
-		case 3:
-			nuevoMedico(lista);
-			break;
-		case 4:
-			actualizarStatus();
-			break;
-		case 5:
-			listarTurnosPendientes();
-			break;
-		case 6:
-			listarAtencionesEfectivas();
-			break;
-		case 7:
-			listarCancelaciones();
-			break;
-		default:
-			break;
+void actualizarStatus(Lista_M *&lista)
+{
+	int em, ep;
+	Lista_M *aux1;
+	Turnos *aux2;
+	char d;
+	do
+	{
+		cout << "Ingrese id de medico a actualizar sus turnos" << endl;
+		cin >> em;
+		aux1 = Buscar_ID(lista, em);
+		if (aux1 == NULL)
+		{
+			cout << "No se encontro el id del medico, reintentar" << endl;
+		}
+	} while (aux1 == NULL);
+	do
+	{
+		cout << "Ingrese id de paciente a actualizar estado de su turno" << endl;
+		cin >> ep;
+		aux2 = buscarTURNID(aux1->x, ep);
+		if (aux2 == NULL)
+		{
+			cout << "No se encontro el id del paciente, reintentar" << endl;
+		}
+	} while (aux2 == NULL);
+	do
+	{
+		cout << "Ingrese el estado del turno actual (P-A-C-X)" << endl;
+		cin >> d;
+		if (d != 'P' && d != 'A' && d != 'C' && d != 'X')
+		{
+			cout << "Caracter invalido, reintentar" << endl;
+		}
+	} while (d != 'P' && d != 'A' && d != 'C' && d != 'X');
+	aux1->x = aux2;
+	aux1->x->info.estatus = d;
+	return;
+}
+
+void listarTurnosPendientes(Lista_M *&lista)
+{
+	int em, mes;
+	Lista_M *aux1;
+	char d;
+	do
+	{
+		cout << "Ingrese id de medico para listar turnos pendientes" << endl;
+		cin >> em;
+		aux1 = Buscar_ID(lista, em);
+		if (aux1 == NULL)
+		{
+			cout << "No se encontro el id del medico, reintentar" << endl;
+		}
+	} while (aux1 == NULL);
+	cout << "Ingrese mes (numerico)" << endl;
+	cin >> mes;
+	buscarMES(aux1->x, mes);
+	return;
+}
+
+void listarAtencionesEfectivas(Lista_M *&lista)
+{
+	Lista_M *aux;
+	int mes;
+	cout << "Ingrese mes (numerico)" << endl;
+	cin >> mes;
+	aux = lista;
+	cantMES(aux, mes);
+	return;
+}
+
+void listarCancelaciones(Lista_M *&lista, Especialidades vec[])
+{
+	Lista_M *aux = lista;
+	FILE *a = fopen("PACIENTES.bin", "rb");
+	FILE *b = fopen("MEDICOS.bin", "rb");
+	Paciente auxp;
+	Medicos auxm;
+	char ruta1[] = "PACIENTES.bin";
+	char ruta2[] = "MEDICOS.bin";
+	int mes, i;
+	cout << "Ingrese el mes a listar sus cancelaciones" << endl;
+	cin >> mes;
+	fread(&auxp, sizeof(Paciente), 1, a);
+	fread(&auxm, sizeof(Medicos), 1, b);
+	cout << "NOMBRE DEL PACIENTE:		NOMBRE DEL MEDICO:		ESPECIALIDAD:		DIA DE ATENCION:" << endl;
+	while (aux != NULL)
+	{
+		while (aux->x != NULL && aux->x->info.m != mes)
+		{
+			aux->x = aux->x->sgte;
+		}
+		while (aux->x != NULL && aux->x->info.m == mes)
+		{
+			if (aux->x->info.estatus == 'C')
+			{
+				auxp = apareoP(ruta1, aux->x->info.id_psub);
+				auxm = apareoM(ruta2, aux->id_listM);
+				i = apareoE(auxm.id_especialidad, vec);
+				cout << auxp.nomb_P << auxm.nomb_M << vec[i].descrip << auxm.disponibilidad << endl;
+			}
+
+			aux->x = aux->x->sgte;
+		}
+		aux = aux->sgte;
+	}
+	fclose(a);
+	fclose(b);
+	return;
+}
+
+void ejecutarOpcion(int opc, Lista_M *&lista, Especialidades vec[])
+{
+	switch (opc)
+	{
+	case 1:
+		nuevoPaciente();
+		break;
+	case 2:
+		nuevoTurno(lista);
+		break;
+	case 3:
+		nuevoMedico(lista);
+		break;
+	case 4:
+		actualizarStatus(lista);
+		break;
+	case 5:
+		listarTurnosPendientes(lista);
+		break;
+	case 6:
+		listarAtencionesEfectivas(lista);
+		break;
+	case 7:
+		listarCancelaciones(lista, vec);
+		break;
+	default:
+		break;
 	}
 }
 
-void mostrarMenu(Lista_M *&lista){
+void mostrarMenu(Lista_M *&lista, Especialidades vec[])
+{
 	int opcion = -1;
-	while(opcion != 0){
-		//mostrar menu y recibir opcion
+	while (opcion != 0)
+	{
+		// mostrar menu y recibir opcion
 		opcion = imprimirMenu();
-		//ejecutar la opcion 
-		ejecutarOpcion(opcion, lista);
+		// ejecutar la opcion
+		ejecutarOpcion(opcion, lista, vec);
 	}
 }
