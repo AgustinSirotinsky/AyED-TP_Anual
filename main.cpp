@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <conio.h>
+#include <fstream>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ struct Medicos
 	int matricula;
 	int id_especialidad;
 	int disponibilidad; // secuencia numerica 7 dias 1234567, 1 es domingo
-	char rango[10];		// De 00 a 24
+	int rango;		// De 00 a 24
 	int tiempo;
 };
 
@@ -57,6 +58,7 @@ struct Lista_M
 	Lista_M *sgte = NULL;
 };
 
+void carga(Paciente y, Medicos j, Especialidades v[], char ruta1[], char ruta2[], Lista_M *&lista);
 Lista_M *Buscar_ID(Lista_M *lista, int i);
 Turnos *buscarTURNf(Turnos *n, int i);
 Turnos *buscarTURNID(Turnos *n, int i);
@@ -81,8 +83,84 @@ int buscarMayor(Lista_M *&lista);
 
 int main(int argc, char **argv)
 {
+	Paciente y;
+	Medicos j;
 	int z = 0;
 	Especialidades v[20];
+	char ruta1[] = "PACIENTES.bin";
+	char ruta2[] = "MEDICOS.bin";
+	Lista_M *lista = NULL;
+	carga(y, j, v, ruta1, ruta2, lista);
+	mostrarMenu(lista, v);
+
+	return 0;
+}
+
+void carga(Paciente y, Medicos j, Especialidades v[], char ruta1[], char ruta2[], Lista_M *&lista)
+{ // Cargar en la lista
+	Lista_M *aux;
+	aux = lista;
+	FILE *a = fopen(ruta1, "rb+");
+	FILE *b = fopen(ruta2, "rb+");
+	y.id_paciente = 1;
+	strcpy(y.nomb_P, "Julian");
+	strcpy(y.ape_P, "Novoa");
+	y.dni = 43182547;
+	y.edad = 22;
+	y.telefono = 42256758;
+	fwrite(&y, sizeof(Paciente), 1, a);
+	y.id_paciente = 2;
+	strcpy(y.nomb_P, "Gabriel");
+	strcpy(y.ape_P, "Roldan");
+	y.dni = 43184587;
+	y.edad = 42;
+	y.telefono = 42867890;
+	fwrite(&y, sizeof(Paciente), 1, a);
+	y.id_paciente = 3;
+	strcpy(y.nomb_P, "Tomas");
+	strcpy(y.ape_P, "Rodriguez");
+	y.dni = 45098765;
+	y.edad = 30;
+	y.telefono = 43567435;
+	fwrite(&y, sizeof(Paciente), 1, a);
+	strcpy(j.nomb_M, "Alejo");
+	strcpy(j.ape_M, "Ortega");
+	j.matricula = 347;
+	j.id_medico = 1;
+	aux = new Lista_M();
+	aux->id_listM = j.id_medico;
+	aux = aux->sgte;
+	j.id_especialidad = 3;
+	j.disponibilidad = 2345;
+	j.rango = 1020;
+	j.tiempo = 45;
+	fwrite(&j, sizeof(Medicos), 1, b);
+	strcpy(j.nomb_M, "Franco");
+	strcpy(j.ape_M, "Diaz");
+	j.matricula = 496;
+	j.id_medico = 2;
+	aux = new Lista_M();
+	aux->id_listM = j.id_medico;
+	aux = aux->sgte;
+	j.id_especialidad = 7;
+	j.disponibilidad = 34567;
+	j.rango = 1019;
+	j.tiempo = 30;
+	fwrite(&j, sizeof(Medicos), 1, b);
+	strcpy(j.nomb_M, "Matias");
+	strcpy(j.ape_M, "Lopez");
+	j.matricula = 987;
+	j.id_medico = 3;
+	aux = new Lista_M();
+	aux->id_listM = j.id_medico;
+	aux = aux->sgte;
+	j.id_especialidad = 16;
+	j.disponibilidad = 12456;
+	j.rango = 1119;
+	j.tiempo = 60;
+	fwrite(&j, sizeof(Medicos), 1, b);
+	fclose(a);
+	fclose(b);
 	for (int i = 0; i < 20; i++)
 	{
 		v[i].id_especialidades = i + 1;
@@ -107,11 +185,7 @@ int main(int argc, char **argv)
 	strcpy(v[17].descrip, "Neumologia");
 	strcpy(v[18].descrip, "Obstetricia");
 	strcpy(v[19].descrip, "Endocrinologia");
-
-	Lista_M *lista = NULL;
-	mostrarMenu(lista, v);
-
-	return 0;
+	return;
 }
 
 Lista_M *Buscar_ID(Lista_M *lista, int i)
@@ -340,7 +414,7 @@ int imprimirMenu()
 void nuevoPaciente()
 {
 	Paciente x;
-	FILE *a = fopen("PACIENTES.bin", "rb+");
+	FILE *a = fopen("PACIENTES.bin", "ab+");
 	cout << "Ingrese id del paciente" << endl;
 	cin >> x.id_paciente;
 	cout << "Ingrese nombre del paciente" << endl;
@@ -360,17 +434,17 @@ void nuevoPaciente()
 
 int buscarMayor(Lista_M *&lista)
 {
-	Lista_M *aux = lista ;
+	Lista_M *aux = lista;
 	int mayor = 0;
 	while (aux != NULL)
 	{
 		while (aux->x != NULL)
 		{
-			if (aux->x->info.id_turno>mayor)
+			if (aux->x->info.id_turno > mayor)
 			{
 				mayor = aux->x->info.id_turno;
 			}
-			
+
 			aux->x = aux->x->sgte;
 		}
 		aux = aux->sgte;
@@ -408,18 +482,18 @@ void nuevoTurno(Lista_M *&lista)
 		}
 		if (b == 1)
 		{
-			z=buscarMayor(lista);
-			aux->x->info.id_turno=z++;
+			z = buscarMayor(lista);
+			aux->x->info.id_turno = z++;
 		}
 
 	} while (b == 0);
 	return;
 }
 
-void nuevoMedico(Lista_M *&lista)
+void nuevoMedico(Lista_M *&lista) // Salta ingresos por la cant de caracteres ingresados
 {
 	Medicos h;
-	FILE *b = fopen("MEDICOS.bin", "rb+");
+	FILE *b = fopen("MEDICOS.bin", "ab+");
 	cout << "Ingrese id del medico" << endl;
 	cin >> h.id_medico;
 	cout << "Ingrese nombre del medico" << endl;
@@ -432,7 +506,7 @@ void nuevoMedico(Lista_M *&lista)
 	cin >> h.id_especialidad;
 	cout << "Ingrese disponibilidad diaria del medico" << endl;
 	cin >> h.disponibilidad;
-	cout << "Ingrese rango horaria del medico" << endl;
+	cout << "Ingrese rango horario del medico" << endl;
 	cin >> h.rango;
 	cout << "Ingrese tiempo de consulta en minutos" << endl;
 	cin >> h.tiempo;
