@@ -24,7 +24,7 @@ struct Medicos
 	int matricula;
 	int id_especialidad;
 	int disponibilidad; // secuencia numerica 7 dias 1234567, 1 es domingo
-	int rango;		// De 00 a 24
+	int rango;			// De 00 a 24
 	int tiempo;
 };
 
@@ -76,21 +76,30 @@ void buscarMES(Turnos *n, int i);
 void listarTurnosPendientes(Lista_M *&lista);
 void listarAtencionesEfectivas(Lista_M *&lista);
 void listarCancelaciones(Lista_M *&lista, Especialidades vec[]);
-Paciente apareoP(char ruta1[], int id);
-Medicos apareoM(char ruta2[], int id);
+//Paciente apareoP(char ruta1[], int id);
+Paciente apareoP(FILE *a, int id);
+//Medicos apareoM(char ruta2[], int id);
+Medicos apareoM(FILE *b, int id);
 int apareoE(int id, Especialidades vec[]);
 int buscarMayor(Lista_M *&lista);
+void carga_T(Lista_M *&lista, info_turnos m);
 
 int main(int argc, char **argv)
 {
 	Paciente y;
 	Medicos j;
-	int z = 0;
+	int z = -1;
+	info_turnos m;
 	Especialidades v[20];
 	char ruta1[] = "PACIENTES.bin";
 	char ruta2[] = "MEDICOS.bin";
 	Lista_M *lista = NULL;
+	InsertarOrdenadoM(lista, 1);
+	InsertarOrdenadoM(lista, 2);
+	InsertarOrdenadoM(lista, 3);
+
 	carga(y, j, v, ruta1, ruta2, lista);
+	carga_T(lista, m);
 	mostrarMenu(lista, v);
 
 	return 0;
@@ -127,9 +136,6 @@ void carga(Paciente y, Medicos j, Especialidades v[], char ruta1[], char ruta2[]
 	strcpy(j.ape_M, "Ortega");
 	j.matricula = 347;
 	j.id_medico = 1;
-	aux = new Lista_M();
-	aux->id_listM = j.id_medico;
-	aux = aux->sgte;
 	j.id_especialidad = 3;
 	j.disponibilidad = 2345;
 	j.rango = 1020;
@@ -139,9 +145,6 @@ void carga(Paciente y, Medicos j, Especialidades v[], char ruta1[], char ruta2[]
 	strcpy(j.ape_M, "Diaz");
 	j.matricula = 496;
 	j.id_medico = 2;
-	aux = new Lista_M();
-	aux->id_listM = j.id_medico;
-	aux = aux->sgte;
 	j.id_especialidad = 7;
 	j.disponibilidad = 34567;
 	j.rango = 1019;
@@ -151,9 +154,6 @@ void carga(Paciente y, Medicos j, Especialidades v[], char ruta1[], char ruta2[]
 	strcpy(j.ape_M, "Lopez");
 	j.matricula = 987;
 	j.id_medico = 3;
-	aux = new Lista_M();
-	aux->id_listM = j.id_medico;
-	aux = aux->sgte;
 	j.id_especialidad = 16;
 	j.disponibilidad = 12456;
 	j.rango = 1119;
@@ -161,6 +161,7 @@ void carga(Paciente y, Medicos j, Especialidades v[], char ruta1[], char ruta2[]
 	fwrite(&j, sizeof(Medicos), 1, b);
 	fclose(a);
 	fclose(b);
+
 	for (int i = 0; i < 20; i++)
 	{
 		v[i].id_especialidades = i + 1;
@@ -226,11 +227,11 @@ void buscarMES(Turnos *n, int i)
 		q = q->sgte;
 	}
 	cout << "ID PACIENTE:		ID TURNO:		HORA:		DIA:		MES:		ESTADO:" << endl;
-	while (q->info.m == i)
+	while (q!=NULL && q->info.m == i)
 	{
 		if (q->info.estatus == 'P')
 		{
-			cout << q->info.id_psub << " " << q->info.id_turno << " " << q->info.h << " " << q->info.d << " " << q->info.m << " " << q->info.estatus << endl;
+			cout << q->info.id_psub << "		" << q->info.id_turno << "		" << q->info.h << "			" << q->info.d << "		" << q->info.m << "			" << q->info.estatus << endl;
 		}
 
 		q = q->sgte;
@@ -263,13 +264,14 @@ void cantMES(Lista_M *lista, int mes)
 	return;
 }
 
-Paciente apareoP(char ruta1[], int id)
+Paciente apareoP(FILE *a, int id) //char ruta1[]
 {
 	Paciente y;
-	FILE *a = fopen(ruta1, "rb");
-	fread(&y, sizeof(Paciente), 1, a);
+	//FILE *a = fopen(ruta1, "rb");
+	//fread(&y, sizeof(Paciente), 1, a);
 	while (!feof(a))
 	{
+		cout << "LECTURA CORRECTA PACIENTE" << endl;
 		if (y.id_paciente != id)
 		{
 			fread(&y, sizeof(Paciente), 1, a);
@@ -279,27 +281,28 @@ Paciente apareoP(char ruta1[], int id)
 			fseek(a, sizeof(Paciente), SEEK_END);
 		}
 	}
-	fclose(a);
+	//fclose(a);
 	return y;
 }
 
-Medicos apareoM(char ruta2[], int id)
+Medicos apareoM(FILE *b, int id)
 {
 	Medicos y;
-	FILE *a = fopen(ruta2, "rb");
-	fread(&y, sizeof(Medicos), 1, a);
-	while (!feof(a))
+	//FILE *a = fopen(ruta2, "rb");
+	//fread(&y, sizeof(Medicos), 1, a);
+	while (!feof(b))
 	{
 		if (y.id_medico != id)
 		{
-			fread(&y, sizeof(Medicos), 1, a);
+			cout << "LECTURA CORRECTA MEDICO" << endl;
+			fread(&y, sizeof(Medicos), 1, b);
 		}
 		else
 		{
-			fseek(a, sizeof(Medicos), SEEK_END);
+			fseek(b, sizeof(Medicos), SEEK_END);
 		}
 	}
-	fclose(a);
+	//fclose(a);
 	return y;
 }
 
@@ -344,8 +347,8 @@ void InsertarOrdenadoM(Lista_M *&lista, int i)
 	p->sgte = NULL;
 	if (lista == NULL || i < lista->id_listM)
 	{
-		p->sgte == lista;
-		lista == p;
+		p->sgte = lista;
+		lista = p;
 	}
 	else
 	{
@@ -367,8 +370,10 @@ int InsertarSinRepetir(Turnos *&n, info_turnos &y)
 	y.f = f;
 	Turnos *aux1 = buscarTURNf(n, y.f);
 	Turnos *aux2 = buscarTURNID(n, y.id_psub);
+
 	if (aux1 == NULL && aux2 == NULL)
 	{
+
 		InsertarOrdenado(n, y);
 		s = 1;
 	}
@@ -381,6 +386,46 @@ int InsertarSinRepetir(Turnos *&n, info_turnos &y)
 		s = 0;
 	}
 	return s;
+}
+
+void carga_T(Lista_M *&lista, info_turnos m)
+{
+	Turnos *aux = NULL;
+	int z = -1;
+	aux = lista->x;
+	m.h = 20;
+	m.d = 24;
+	m.m = 10;
+	m.estatus = 'P';
+	m.id_psub = 2;
+	z = InsertarSinRepetir(aux, m);
+	if (z == 1)
+	{
+		cout << "carga de turno correcta" << endl;
+	}
+	aux = lista->sgte->x;
+	m.h = 13;
+	m.d = 17;
+	m.m = 11;
+	m.estatus = 'P';
+	m.id_psub = 3;
+	z = InsertarSinRepetir(aux, m);
+	if (z == 1)
+	{
+		cout << "carga de turno correcta" << endl;
+	}
+	aux = lista->sgte->x;
+	m.h = 11;
+	m.d = 29;
+	m.m = 10;
+	m.estatus = 'P';
+	m.id_psub = 1;
+	z = InsertarSinRepetir(aux, m);
+	if (z == 1)
+	{
+		cout << "carga de turno correcta" << endl;
+	}
+	return;
 }
 
 int imprimirMenu()
@@ -404,7 +449,7 @@ int imprimirMenu()
 	cout << endl;
 
 	int opc = -1;
-	cout << "ingrese una opcion: ";
+	cout << "Ingrese una opcion: ";
 	cin >> opc;
 	cout << endl;
 
@@ -415,7 +460,7 @@ void nuevoPaciente()
 {
 	Paciente x;
 	FILE *a = fopen("PACIENTES.bin", "ab+");
-	cout << "Ingrese id del paciente" << endl;
+	cout << "Ingrese id del paciente (numerico)" << endl;
 	cin >> x.id_paciente;
 	cout << "Ingrese nombre del paciente" << endl;
 	cin >> x.nomb_P;
@@ -423,7 +468,7 @@ void nuevoPaciente()
 	cin >> x.ape_P;
 	cout << "Ingrese edad del paciente" << endl;
 	cin >> x.edad;
-	cout << "Ingrese dni del paciente" << endl;
+	cout << "Ingrese dni del paciente (sin puntos)" << endl;
 	cin >> x.dni;
 	cout << "Ingrese telefono del paciente" << endl;
 	cin >> x.telefono;
@@ -456,21 +501,32 @@ void nuevoTurno(Lista_M *&lista)
 {
 	Lista_M *aux;
 	info_turnos m;
-	int i = 0, j = 0, b = 0, z = 0;
-	cout << "Ingrese id del medico a atenderse" << endl;
-	cin >> i;
-	aux = Buscar_ID(lista, i);
+	int i = 0, j = 0, b = -1, z = 0;
 	do
 	{
-		cout << " ingrese hora del turno" << endl;
+
+		cout << "Ingrese id del medico a atenderse (numerico)" << endl;
+		cin >> i;
+		aux = Buscar_ID(lista, i);
+		if (aux == NULL)
+		{
+			cout << "Id de medico invalido, reintentar" << endl;
+		}
+	} while (aux == NULL);
+	z = buscarMayor(lista);
+	do
+	{
+		cout << "Ingrese hora del turno (HH)" << endl;
 		cin >> m.h;
-		cout << " ingrese dia del turno" << endl;
+		cout << "Ingrese dia del turno (DD)" << endl;
 		cin >> m.d;
-		cout << " ingrese mes del turno" << endl;
+		cout << "Ingrese mes del turno (MM)" << endl;
 		cin >> m.m;
 		m.estatus = 'P';
-		cout << " ingrese id del paciente" << endl;
+		cout << "Ingrese id del paciente (numerico)" << endl;
 		cin >> m.id_psub;
+		z++;
+		m.id_turno = z;
 		b = InsertarSinRepetir(aux->x, m);
 		if (b == 2)
 		{
@@ -482,8 +538,7 @@ void nuevoTurno(Lista_M *&lista)
 		}
 		if (b == 1)
 		{
-			z = buscarMayor(lista);
-			aux->x->info.id_turno = z++;
+			cout << "Turno cargado correctamente" << endl;
 		}
 
 	} while (b == 0);
@@ -502,17 +557,18 @@ void nuevoMedico(Lista_M *&lista) // Salta ingresos por la cant de caracteres in
 	cin >> h.ape_M;
 	cout << "Ingrese matricula del medico" << endl;
 	cin >> h.matricula;
-	cout << "Ingrese id de la especdialidad del medico" << endl;
+	cout << "Ingrese id de la especialidad del medico" << endl;
 	cin >> h.id_especialidad;
 	cout << "Ingrese disponibilidad diaria del medico" << endl;
 	cin >> h.disponibilidad;
-	cout << "Ingrese rango horario del medico" << endl;
+	cout << "Ingrese rango horario del medico (iiff)" << endl;
 	cin >> h.rango;
 	cout << "Ingrese tiempo de consulta en minutos" << endl;
 	cin >> h.tiempo;
 	fwrite(&h, sizeof(Medicos), 1, b);
 	fclose(b);
 	InsertarOrdenadoM(lista, h.id_medico);
+	cout << "Insertado exitosamente" << endl;
 	return;
 }
 
@@ -532,16 +588,15 @@ void actualizarStatus(Lista_M *&lista)
 			cout << "No se encontro el id del medico, reintentar" << endl;
 		}
 	} while (aux1 == NULL);
-	do
+
+	cout << "Ingrese id de paciente a actualizar estado de su turno" << endl;
+	cin >> ep;
+	aux2 = buscarTURNID(aux1->x, ep);
+	if (aux2 == NULL)
 	{
-		cout << "Ingrese id de paciente a actualizar estado de su turno" << endl;
-		cin >> ep;
-		aux2 = buscarTURNID(aux1->x, ep);
-		if (aux2 == NULL)
-		{
-			cout << "No se encontro el id del paciente, reintentar" << endl;
-		}
-	} while (aux2 == NULL);
+		cout << "No se encontro el id del paciente, reintentar" << endl;
+		return;
+	}
 	do
 	{
 		cout << "Ingrese el estado del turno actual (P-A-C-X)" << endl;
@@ -553,6 +608,7 @@ void actualizarStatus(Lista_M *&lista)
 	} while (d != 'P' && d != 'A' && d != 'C' && d != 'X');
 	aux1->x = aux2;
 	aux1->x->info.estatus = d;
+	cout << "Actualizado exitosamente" << endl;
 	return;
 }
 
@@ -602,7 +658,7 @@ void listarCancelaciones(Lista_M *&lista, Especialidades vec[])
 	cin >> mes;
 	fread(&auxp, sizeof(Paciente), 1, a);
 	fread(&auxm, sizeof(Medicos), 1, b);
-	cout << "NOMBRE DEL PACIENTE:		NOMBRE DEL MEDICO:		ESPECIALIDAD:		DIA DE ATENCION:" << endl;
+	cout << "NOMBRE DEL PACIENTE:	NOMBRE DEL MEDICO:	ESPECIALIDAD:    DIA DE ATENCION:" << endl;
 	while (aux != NULL)
 	{
 		while (aux->x != NULL && aux->x->info.m != mes)
@@ -613,10 +669,11 @@ void listarCancelaciones(Lista_M *&lista, Especialidades vec[])
 		{
 			if (aux->x->info.estatus == 'C')
 			{
-				auxp = apareoP(ruta1, aux->x->info.id_psub);
-				auxm = apareoM(ruta2, aux->id_listM);
+				cout << "TURNOS CANCELADOS" << endl;
+				auxp = apareoP(a, aux->x->info.id_psub);
+				auxm = apareoM(b, aux->id_listM);
 				i = apareoE(auxm.id_especialidad, vec);
-				cout << auxp.nomb_P << auxm.nomb_M << vec[i].descrip << auxm.disponibilidad << endl;
+				cout << auxp.nomb_P << "		" << auxm.nomb_M << "		"<< vec[i].descrip << "		"<< auxm.disponibilidad<< endl;
 			}
 
 			aux->x = aux->x->sgte;
