@@ -76,9 +76,7 @@ void buscarMES(Turnos *n, int i);
 void listarTurnosPendientes(Lista_M *&lista);
 void listarAtencionesEfectivas(Lista_M *&lista);
 void listarCancelaciones(Lista_M *&lista, Especialidades vec[]);
-//Paciente apareoP(char ruta1[], int id);
 Paciente apareoP(FILE *a, int id);
-//Medicos apareoM(char ruta2[], int id);
 Medicos apareoM(FILE *b, int id);
 int apareoE(int id, Especialidades vec[]);
 int buscarMayor(Lista_M *&lista);
@@ -264,11 +262,9 @@ void cantMES(Lista_M *lista, int mes)
 	return;
 }
 
-Paciente apareoP(FILE *a, int id) //char ruta1[]
+Paciente apareoP(FILE *a, int id)
 {
 	Paciente y;
-	//FILE *a = fopen(ruta1, "rb");
-	//fread(&y, sizeof(Paciente), 1, a);
 	while (fread(&y, sizeof(Paciente), 1, a))
 	{
 		fread(&y, sizeof(Paciente), 1, a);
@@ -281,14 +277,12 @@ Paciente apareoP(FILE *a, int id) //char ruta1[]
 			fseek(a, sizeof(Paciente), SEEK_END);
 		}
 	}
-	//fclose(a);
 	return y;
 }
 
 Medicos apareoM(FILE *b, int id)
 {
 	Medicos y;
-	//FILE *a = fopen(ruta2, "rb");
 	while (fread(&y, sizeof(Medicos), 1, b))
 	{
 		if (y.id_medico != id)
@@ -300,7 +294,6 @@ Medicos apareoM(FILE *b, int id)
 			fseek(b, sizeof(Medicos), SEEK_END);
 		}
 	}
-	//fclose(a);
 	return y;
 }
 
@@ -544,7 +537,7 @@ void nuevoTurno(Lista_M *&lista)
 	return;
 }
 
-void nuevoMedico(Lista_M *&lista) // Salta ingresos por la cant de caracteres ingresados
+void nuevoMedico(Lista_M *&lista)
 {
 	Medicos h;
 	FILE *b = fopen("MEDICOS.bin", "ab+");
