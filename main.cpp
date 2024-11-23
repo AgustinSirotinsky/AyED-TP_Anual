@@ -269,9 +269,9 @@ Paciente apareoP(FILE *a, int id) //char ruta1[]
 	Paciente y;
 	//FILE *a = fopen(ruta1, "rb");
 	//fread(&y, sizeof(Paciente), 1, a);
-	while (!feof(a))
+	while (fread(&y, sizeof(Paciente), 1, a))
 	{
-		cout << "LECTURA CORRECTA PACIENTE" << endl;
+		fread(&y, sizeof(Paciente), 1, a);
 		if (y.id_paciente != id)
 		{
 			fread(&y, sizeof(Paciente), 1, a);
@@ -289,12 +289,10 @@ Medicos apareoM(FILE *b, int id)
 {
 	Medicos y;
 	//FILE *a = fopen(ruta2, "rb");
-	//fread(&y, sizeof(Medicos), 1, a);
-	while (!feof(b))
+	while (fread(&y, sizeof(Medicos), 1, b))
 	{
 		if (y.id_medico != id)
 		{
-			cout << "LECTURA CORRECTA MEDICO" << endl;
 			fread(&y, sizeof(Medicos), 1, b);
 		}
 		else
@@ -474,6 +472,7 @@ void nuevoPaciente()
 	cin >> x.telefono;
 	fwrite(&x, sizeof(Paciente), 1, a);
 	fclose(a);
+	cout << "PACIENTE CARGADO CORRECTAMENTE" << endl;
 	return;
 }
 
@@ -538,7 +537,7 @@ void nuevoTurno(Lista_M *&lista)
 		}
 		if (b == 1)
 		{
-			cout << "Turno cargado correctamente" << endl;
+			cout << "TURNO CARGADO CORRECTAMENTE" << endl;
 		}
 
 	} while (b == 0);
@@ -568,7 +567,7 @@ void nuevoMedico(Lista_M *&lista) // Salta ingresos por la cant de caracteres in
 	fwrite(&h, sizeof(Medicos), 1, b);
 	fclose(b);
 	InsertarOrdenadoM(lista, h.id_medico);
-	cout << "Insertado exitosamente" << endl;
+	cout << "MEDICO CARGADO CORRECTAMENTE" << endl;
 	return;
 }
 
@@ -669,7 +668,6 @@ void listarCancelaciones(Lista_M *&lista, Especialidades vec[])
 		{
 			if (aux->x->info.estatus == 'C')
 			{
-				cout << "TURNOS CANCELADOS" << endl;
 				auxp = apareoP(a, aux->x->info.id_psub);
 				auxm = apareoM(b, aux->id_listM);
 				i = apareoE(auxm.id_especialidad, vec);
